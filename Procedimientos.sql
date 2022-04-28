@@ -1,0 +1,1 @@
+create procedure AddNacimiento(dpi_padre numeric, dpi_madre numeric, primer_nom varchar(30), segundo_nom varchar(30), tercer_nom varchar(30), fecha_nac date, codigo_municipio numeric, genero char)

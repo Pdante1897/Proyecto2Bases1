@@ -3,7 +3,7 @@ create database PROYECTO2;
 use PROYECTO2;
 
 create table PERSONA(
-	cui numeric not null primary key,
+	cui int8 primary key,
     nombre1 varchar(25) not null,
     nombre2 varchar(25) null,
     nombre3 varchar(25) null,
@@ -12,92 +12,92 @@ create table PERSONA(
 );
 
 create table FECHA(
-	id_fecha numeric not null primary key,
+	id_fecha int8 auto_increment primary key,
     desc_fecha date not null
 );
 
 create table MUNICIPIO(
-	id_municipio numeric not null primary key,
+	id_municipio int8 primary key,
     nombre_municipio varchar(30) not null,
-    departamento numeric not null
+    departamento int8 not null
 );
 
 create table DEPARTAMENTO(
-	id_departamento numeric not null primary key,
+	id_departamento int8 primary key,
     nombre_departamento varchar(30) not null
 );
 
 create table GENERO(
-	id_genero numeric not null primary key,
-    nombre_genero varchar(10) not null
+	id_genero int8 auto_increment primary key,
+    nombre_genero char not null
 );
 
 create table TIPO_LICENCIA(
-	id_tipo numeric not null primary key,
+	id_tipo int8 auto_increment primary key,
     nombre_tipo char not null
 );
 
 create table ESTADO_CIVIL(
-	id_estado_civil numeric not null primary key,
+	id_estado_civil int8 auto_increment primary key,
     nombre_estado_civil varchar(10) not null
 );
 
 create table DPI(
-	id_dpi numeric not null primary key,
-    cui numeric not null,
-    estado_civil numeric not null,
-    fecha numeric not null,
-    municipio numeric not null
+	id_dpi int8 primary key,
+    cui int8 not null,
+    estado_civil int8 not null,
+    fecha int8 not null,
+    municipio int8 not null
 );
 
 create table ACTA_NAC(
-	id_acta_nac numeric not null primary key,
-    fecha_nac numeric not null,
-    persona numeric not null,
-    municipio numeric not null,
-    padre numeric not null,
-    madre numeric not null,
-    genero numeric not null
+	id_acta_nac int8 auto_increment primary key,
+    fecha_nac int8 not null,
+    persona int8 not null,
+    municipio int8 not null,
+    padre int8 not null,
+    madre int8 not null,
+    genero int8 not null
 );
 
 create table ACTA_MATRI(
-	id_acta_matri numeric not null primary key,
-    fecha numeric not null,
-    esposo numeric not null,
-    esposa numeric not null
+	id_acta_matri int8 auto_increment primary key,
+    fecha int8 not null,
+    esposo int8 not null,
+    esposa int8 not null
 );
 
 create table ACTA_DIVORCIO(
-	id_act_div numeric not null primary key,
-    fecha numeric not null,
-    acta_matri numeric not null
+	id_act_div int8 auto_increment primary key,
+    fecha int8 not null,
+    acta_matri int8 not null
 );
 
 create table ACTA_DEFUNCION(
-	id_acta_def numeric not null primary key,
-    fecha numeric not null,
-    persona numeric not null,
-    municipio numeric not null
+	id_acta_def int8 auto_increment primary key,
+    fecha int8 not null,
+    persona int8 not null,
+    municipio int8 not null
 );
 
 create table LICENCIA_CONDUCIR(
-	id_licencia numeric not null primary key,
-    persona numeric not null,
-    tipo_licencia numeric not null,
-    fecha numeric not null
+	id_licencia int8 auto_increment primary key,
+    persona int8 not null,
+    tipo_licencia int8 not null,
+    fecha int8 not null
 );
 
 create table ANULADA(
-	id_anuladas numeric not null primary key,
-    licencia_conducir numeric not null,
+	id_anuladas int8 auto_increment primary key,
+    licencia_conducir int8 not null,
     motivo varchar(50) not null
 );
 
 create table VIGENCIA(
-	id_vigencia numeric not null primary key,
-    licencia_conducir numeric not null, 
-    fecha_inicio numeric not null,
-    fecha_expiracion numeric not null
+	id_vigencia int8 auto_increment primary key,
+    licencia_conducir int8 not null, 
+    fecha_inicio int8 not null,
+    fecha_expiracion int8 not null
 );
 
 
@@ -176,8 +176,8 @@ ADD FOREIGN KEY (fecha_expiracion) REFERENCES FECHA(id_fecha);
 alter table VIGENCIA
 ADD FOREIGN KEY (licencia_conducir) REFERENCES LICENCIA_CONDUCIR(id_licencia); 
 
-
-
+alter table ANULADA
+ADD FOREIGN KEY (licencia_conducir) REFERENCES LICENCIA_CONDUCIR(id_licencia); 
 
 
 
