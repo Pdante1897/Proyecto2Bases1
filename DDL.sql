@@ -13,7 +13,7 @@ create table PERSONA(
 
 create table FECHA(
 	id_fecha int8 auto_increment primary key,
-    desc_fecha date not null
+    desc_fecha date not null unique
 );
 
 create table MUNICIPIO(

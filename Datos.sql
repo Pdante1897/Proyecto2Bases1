@@ -46,11 +46,6 @@ insert into FECHA (desc_fecha) values(STR_TO_DATE('25/04/1950','%d/%m/%Y %H:%i:%
 insert into FECHA (desc_fecha) values(STR_TO_DATE('07/05/1997','%d/%m/%Y %H:%i:%S'));
 insert into FECHA (desc_fecha) values(STR_TO_DATE('31/12/1998','%d/%m/%Y %H:%i:%S'));
 insert into FECHA (desc_fecha) values(STR_TO_DATE('15/02/2002','%d/%m/%Y %H:%i:%S'));
-insert into FECHA (desc_fecha) values(STR_TO_DATE('28/08/1990','%d/%m/%Y %H:%i:%S'));
-insert into FECHA (desc_fecha) values(STR_TO_DATE('28/08/1990','%d/%m/%Y %H:%i:%S'));
-insert into FECHA (desc_fecha) values(STR_TO_DATE('28/08/1990','%d/%m/%Y %H:%i:%S'));
-insert into FECHA (desc_fecha) values(STR_TO_DATE('28/08/1990','%d/%m/%Y %H:%i:%S'));
-insert into FECHA (desc_fecha) values(STR_TO_DATE('28/08/1990','%d/%m/%Y %H:%i:%S'));
 
 insert into PERSONA values(3564360470101, 'Bryan', 'Gerardo', null,'Paez', 'Morales');
 insert into PERSONA values(3564360460101, 'Douglas', 'Alexsander', null,'Paez', 'Morales');
@@ -69,9 +64,17 @@ insert into PERSONA values(3564360510101, 'Gael', 'Alejandro', null,'Gonzales', 
 insert into PERSONA values(3564360520101, 'Jennifer', 'Paola', null,'Lopez', 'Muralles');
 insert into PERSONA values(3564360530101, 'Andrea', null, null,'Alaniz', null);
 
+insert into DPI values(3564360440101, 3564360440101, 2, 4, 0101);
+insert into DPI values(3564360430101, 3564360430101, 2, 4, 0101);
 
 
 
+
+CREATE TABLE sequence (id INT NOT NULL);
+INSERT INTO sequence VALUES (400000000);
+
+UPDATE sequence SET id=LAST_INSERT_ID(id+1);
+SELECT LAST_INSERT_ID();
 
 
 
