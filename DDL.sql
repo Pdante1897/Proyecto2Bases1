@@ -44,7 +44,6 @@ create table ESTADO_CIVIL(
 
 create table DPI(
 	id_dpi int8 primary key,
-    cui int8 not null,
     estado_civil int8 not null,
     fecha int8 not null,
     municipio int8 not null
@@ -76,8 +75,8 @@ create table ACTA_DIVORCIO(
 create table ACTA_DEFUNCION(
 	id_acta_def int8 auto_increment primary key,
     fecha int8 not null,
-    persona int8 not null,
-    municipio int8 not null
+    persona int8 not null unique,
+    motivo varchar(50) not null
 );
 
 create table LICENCIA_CONDUCIR(
@@ -120,7 +119,7 @@ alter table ACTA_NAC
 ADD FOREIGN KEY (persona) REFERENCES PERSONA(cui); 
 
 alter table DPI
-ADD FOREIGN KEY (cui) REFERENCES PERSONA(cui); 
+ADD FOREIGN KEY (id_dpi) REFERENCES PERSONA(cui); 
 
 alter table DPI
 ADD FOREIGN KEY (fecha) REFERENCES FECHA(id_fecha); 
@@ -152,8 +151,6 @@ ADD FOREIGN KEY (departamento) REFERENCES DEPARTAMENTO(id_departamento);
 alter table ACTA_DEFUNCION
 ADD FOREIGN KEY (fecha) REFERENCES FECHA(id_fecha); 
 
-alter table ACTA_DEFUNCION
-ADD FOREIGN KEY (municipio) REFERENCES MUNICIPIO(id_municipio); 
 
 alter table ACTA_DEFUNCION
 ADD FOREIGN KEY (persona) REFERENCES PERSONA(cui); 

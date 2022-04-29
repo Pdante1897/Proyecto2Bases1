@@ -64,18 +64,49 @@ insert into PERSONA values(3564360510101, 'Gael', 'Alejandro', null,'Gonzales', 
 insert into PERSONA values(3564360520101, 'Jennifer', 'Paola', null,'Lopez', 'Muralles');
 insert into PERSONA values(3564360530101, 'Andrea', null, null,'Alaniz', null);
 
-insert into DPI values(3564360440101, 3564360440101, 2, 4, 0101);
-insert into DPI values(3564360430101, 3564360430101, 2, 4, 0101);
+
+insert into PERSONA values(1000000000101, 'Juan', 'Andres', null, 'Perez', 'Lopez');
+insert into PERSONA values(1000000010101, 'Pedro', 'Juan', null, 'Ambrosio', 'Espania');
+insert into PERSONA values(1000000020101, 'Mario', 'Roberto', null, 'De Leon', 'Leon');
+insert into PERSONA values(1000000030101, 'Carlos', 'Andres', null, 'Rebolorio', 'Quiroa');
+insert into PERSONA values(1000000040101, 'Keneth', 'Rolando', null, 'Guzman', 'Guzman');
+insert into PERSONA values(1000000050101, 'Jony', null, null, 'Macario', 'Guzman');
+insert into PERSONA values(1000000060101, 'Jonathan', 'Josue', null, 'Lopez', 'Quiniones');
+insert into PERSONA values(1000000070101, 'Andrew', 'Ryan', null, 'Perez', 'Pelaez');
+insert into PERSONA values(1000000080101, 'Pablo', 'Fernando', null, 'Juarez', 'Roldan');
+insert into PERSONA values(1000000090101, 'Andres', 'Ricardo', null, 'Milos', 'Quinteros');
+
+insert into PERSONA values(1000000100101, 'Maria', 'Rene', null, 'Dardon', 'Santos');
+
+
+insert into DPI values(3564360440101, 2, 10, 0101);
+insert into DPI values(3564360430101, 2, 9, 0101);
+
+insert into DPI values(1000000000101, 2, 14, 0101);
+insert into DPI values(1000000010101, 2, 10, 0101);
+insert into DPI values(1000000020101, 2, 9, 0101);
+insert into DPI values(1000000030101, 2, 11, 0101);
+insert into DPI values(1000000040101, 2, 4, 0101);
+insert into DPI values(1000000050101, 2, 3, 0101);
+insert into DPI values(1000000060101, 2, 5, 0101);
+
+insert into DPI values(1000000070101, 2, 1, 0101);
+insert into DPI values(1000000080101, 2, 15, 0101);
+
+insert into DPI values(1000000090101, 2, 6, 0101);
+insert into DPI values(1000000100101, 2, 6, 0101);
+
+
+CREATE TABLE if not exists sequence (id INT NOT NULL);
+INSERT INTO  sequence VALUES (400000000);
 
 
 
 
-CREATE TABLE sequence (id INT NOT NULL);
-INSERT INTO sequence VALUES (400000000);
 
-UPDATE sequence SET id=LAST_INSERT_ID(id+1);
-SELECT LAST_INSERT_ID();
-
+select * from municipio;
+select * from fecha;
+select * from dpi;
 
 
 select * from persona;
