@@ -22,6 +22,8 @@ BEGIN
     insert into PERSONA values(CONCAT(registro, codigo_municipio), primer_nom, segundo_nom, tercer_nom, apellidoP, apellidoM );
 	insert into ACTA_NAC values(null, codigo_fecha, CONCAT(registro, codigo_municipio), codigo_municipio, dpi_padre, dpi_madre, codigo_genero);
     UPDATE sequence SET id=id+1;
+    else
+    select concat( 'no se pudo, me dio amsieda :c ') as 'mensaje error';
     end if;
 END$$
 
@@ -46,7 +48,10 @@ BEGIN
     select id_fecha into codigo_fecha from fecha where desc_fecha=STR_TO_DATE(fecha_fall,'%d-%m-%Y %H:%i:%S');
     select fecha_nac into codigo_fecha_nacido from acta_nac where persona=cui_fallecido;
 	select desc_fecha into fecha_nacido from fecha where id_fecha=codigo_fecha_nacido;
-    if DATE(STR_TO_DATE(fecha_fall,'%d-%m-%Y %H:%i:%S')) >= DATE(fecha_nacido) then insert ignore into ACTA_DEFUNCION values(null, codigo_fecha, cui_fallecido, motivo_muerte); end if;
+    if DATE(STR_TO_DATE(fecha_fall,'%d-%m-%Y %H:%i:%S')) >= DATE(fecha_nacido) then insert ignore into ACTA_DEFUNCION values(null, codigo_fecha, cui_fallecido, motivo_muerte); 
+    else
+    select concat( 'no se pudo, me dio amsieda :c ') as 'mensaje error';
+    end if;
 	
 END$$
 
@@ -95,6 +100,8 @@ BEGIN
     insert into ACTA_MATRI values(null, codigo_fecha, dpi_hombre, dpi_mujer); 
     update dpi set estado_civil = 2 where id_dpi = dpi_hombre;
 	update dpi set estado_civil = 2 where id_dpi = dpi_mujer;
+    else
+    select concat( 'no se pudo, me dio amsieda :c ') as 'mensaje error';
     end if;
 END$$
 
@@ -145,6 +152,8 @@ BEGIN
     insert into ACTA_DIVORCIO values(null, codigo_fecha, acta_matrimonio); 
     update dpi set estado_civil = 3 where id_dpi = dpi_esposo;
 	update dpi set estado_civil = 3 where id_dpi = dpi_esposa;
+    else
+    select concat( 'no se pudo, me dio amsieda :c ') as 'mensaje error';
     end if;
 END$$
 
