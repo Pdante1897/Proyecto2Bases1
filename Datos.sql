@@ -46,6 +46,9 @@ insert into FECHA (desc_fecha) values(STR_TO_DATE('25/04/1950','%d/%m/%Y %H:%i:%
 insert into FECHA (desc_fecha) values(STR_TO_DATE('07/05/1997','%d/%m/%Y %H:%i:%S'));
 insert into FECHA (desc_fecha) values(STR_TO_DATE('31/12/1998','%d/%m/%Y %H:%i:%S'));
 insert into FECHA (desc_fecha) values(STR_TO_DATE('15/02/2002','%d/%m/%Y %H:%i:%S'));
+insert into FECHA (desc_fecha) values(STR_TO_DATE('15/02/1930','%d/%m/%Y %H:%i:%S'));
+insert into FECHA (desc_fecha) values(STR_TO_DATE('15/02/1940','%d/%m/%Y %H:%i:%S'));
+
 
 insert into PERSONA values(3564360470101, 'Bryan', 'Gerardo', null,'Paez', 'Morales');
 insert into PERSONA values(3564360460101, 'Douglas', 'Alexsander', null,'Paez', 'Morales');
@@ -65,6 +68,9 @@ insert into PERSONA values(3564360520101, 'Jennifer', 'Paola', null,'Lopez', 'Mu
 insert into PERSONA values(3564360530101, 'Andrea', null, null,'Alaniz', null);
 
 
+insert into PERSONA values(2000000000101, 'Virgilio', null, null, 'Morales', null);
+insert into PERSONA values(2000000010101, 'Mercedes', null, null, 'Santos', null);
+
 insert into PERSONA values(1000000000101, 'Juan', 'Andres', null, 'Perez', 'Lopez');
 insert into PERSONA values(1000000010101, 'Pedro', 'Juan', null, 'Ambrosio', 'Espania');
 insert into PERSONA values(1000000020101, 'Mario', 'Roberto', null, 'De Leon', 'Leon');
@@ -81,6 +87,16 @@ insert into PERSONA values(1000000100101, 'Maria', 'Rene', null, 'Dardon', 'Sant
 
 insert into DPI values(3564360440101, 2, 10, 0101);
 insert into DPI values(3564360430101, 2, 9, 0101);
+
+insert into DPI values(2000000000101, 2, 10, 0101);
+insert into DPI values(2000000010101, 2, 9, 0101);
+
+insert into DPI values(3564360480101, 2, 9, 0101);
+insert into DPI values(3564360540101, 2, 10, 0101);
+
+
+insert into ACTA_NAC values(null, 9, 3564360430101, 0101, 2000000000101, 2000000010101, 2);
+insert into ACTA_NAC values(null, 10, 3564360440101, 0101, 3564360480101, 3564360540101, 1);
 
 insert into DPI values(1000000000101, 2, 14, 0101);
 insert into DPI values(1000000010101, 2, 10, 0101);
@@ -107,6 +123,7 @@ INSERT INTO  sequence VALUES (400000000);
 select * from municipio;
 select * from fecha;
 select * from dpi;
+select * from genero;
 
 
 select * from persona;
