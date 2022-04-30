@@ -159,7 +159,46 @@ END$$
 
 call AddDivorcio(2, '19-04-1992');
 
+DELIMITER $$
+CREATE PROCEDURE AddLicencia(IN cui int8, IN fecha_emision varchar(10), IN tipo char)
+BEGIN
+	declare codigo_fecha int8;
+    declare codigo_fecha_nac int8;
+    declare fecha_nacido date;
+    declare edad int;
+    
+	declare licencia int8;
+    declare codigo_tipo int8;
+    
+    select fecha_nac  into codigo_fecha_nac  from ACTA_NAC where persona = cui;
+	select desc_fecha into fecha_nacido from fecha where id_fecha=codigo_fecha_nac;
+	SELECT TIMESTAMPDIFF(YEAR, fecha_nacido, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into edad;
 
+	insert ignore into FECHA (desc_fecha) values(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'));
+    select id_fecha into codigo_fecha from fecha where desc_fecha=STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S');
+    
+    select id_licencia into licencia from LICENCIA_CONDUCIR where cui=persona;
+    
+    
+    if licencia is null 
+    then 
+		if tipo = 'C' or tipo = 'M' or tipo = 'E' 
+        then
+			if edad >= 16 
+            then
+				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+			else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+			end if;
+		else
+			select concat( 'no se pudo, revisa tipo de licencia que me dio amsieda :c ') as 'mensaje error';
+		end if;
+	else
+			select concat( 'aqui va la validacion para licencias tipo A y B :c ') as 'mensaje error';
+
+    end if;
+    
+END$$
 
 
 
