@@ -333,9 +333,6 @@ END$$
 
 call getDivorcio(2);
 
-
-
-
 drop procedure if exists getMatrimonio;
 
 DELIMITER $$
