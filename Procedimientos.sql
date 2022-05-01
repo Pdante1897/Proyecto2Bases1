@@ -315,7 +315,44 @@ BEGIN
 END$$
 
 
-call getDPI(3564360430101);
+drop procedure if exists getDivorcio;
+
+DELIMITER $$
+CREATE PROCEDURE getDivorcio(IN codigo_matri int8)
+BEGIN
+	select id_act_div as NoDivorcio, acta_matri.esposo as DPIHombre,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,''),persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= acta_matri.esposo) as NombreHombre,
+	acta_matri.esposa as DPIMujer,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,''),persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= acta_matri.esposa) as NombreMujer,
+	desc_fecha as fecha
+    from acta_divorcio inner join acta_matri on acta_matri.id_acta_matri=acta_divorcio.acta_matri
+	inner join fecha on acta_divorcio.fecha=id_fecha 
+    where acta_divorcio.acta_matri=codigo_matri;
+END$$
+
+
+call getDivorcio(2);
+
+
+
+
+drop procedure if exists getMatrimonio;
+
+DELIMITER $$
+CREATE PROCEDURE getMatrimonio(IN codigo_matri int8)
+BEGIN
+	select id_acta_matri as NoDivorcio, acta_matri.esposo as DPIHombre,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,''),persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= acta_matri.esposo) as NombreHombre,
+	acta_matri.esposa as DPIMujer,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,''),persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= acta_matri.esposa) as NombreMujer,
+	desc_fecha as fecha
+    from acta_matri  
+	inner join fecha on acta_matri.fecha=id_fecha 
+    where acta_matri.id_acta_matri=codigo_matri;
+END$$
+
+
+call getMatrimonio(1);
 
 
 
