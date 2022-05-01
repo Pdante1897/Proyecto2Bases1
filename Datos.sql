@@ -84,6 +84,11 @@ insert into PERSONA values(1000000090101, 'Andres', 'Ricardo', null, 'Milos', 'Q
 
 insert into PERSONA values(1000000100101, 'Maria', 'Rene', null, 'Dardon', 'Santos');
 
+insert into PERSONA values(1900000100101, 'Maria', 'Rene', null, 'Leiva', 'Robledo');
+insert into PERSONA values(1900000200101, 'Walter', null, null, 'Perez', 'Santos');
+
+insert into DPI values(1900000100101, 2, 3, 0101);
+insert into DPI values(1900000200101, 2, 3, 0101);
 
 insert into DPI values(3564360440101, 2, 10, 0101);
 insert into DPI values(3564360430101, 2, 9, 0101);
@@ -95,8 +100,17 @@ insert into DPI values(3564360480101, 2, 9, 0101);
 insert into DPI values(3564360540101, 2, 10, 0101);
 
 
+insert into ACTA_NAC values(null, 10, 3564360440101, 0101, 3564360480101, 3564360540101, 1);
+insert into ACTA_NAC values(null, 10, 3564360440101, 0101, 3564360480101, 3564360540101, 2);
+
+
 insert into ACTA_NAC values(null, 9, 3564360430101, 0101, 2000000000101, 2000000010101, 2);
 insert into ACTA_NAC values(null, 10, 3564360440101, 0101, 3564360480101, 3564360540101, 1);
+
+insert into ACTA_NAC values(null, 1, 3564360470101, 0101, 3564360440101, 3564360430101, 1);
+insert into ACTA_NAC values(null, 7, 3564360420101, 0101, 1900000200101, 1900000100101, 2);
+
+
 
 insert into DPI values(1000000000101, 2, 14, 0101);
 insert into DPI values(1000000010101, 2, 10, 0101);

@@ -159,16 +159,36 @@ END$$
 
 call AddDivorcio(2, '19-04-1992');
 
+drop procedure if exists AddLicencia;
+
 DELIMITER $$
 CREATE PROCEDURE AddLicencia(IN cui int8, IN fecha_emision varchar(10), IN tipo char)
 BEGIN
 	declare codigo_fecha int8;
     declare codigo_fecha_nac int8;
+	declare codigo_fecha_antiguedad_c int;
+	declare codigo_fecha_antiguedad_b int;
+
     declare fecha_nacido date;
+    declare fecha_antiguedad_c date;
+	declare fecha_antiguedad_b date;
+
+	declare antiguedad_c int;
+	declare antiguedad_b int;
     declare edad int;
     
-	declare licencia int8;
+    declare licencia_c int;
+    declare licencia_b int;
+    
+	declare licencia_tipo_a int8;
+	declare licencia_tipo_b int8;
+	declare licencia_tipo_c int8;
+	declare licencia_tipo_e int8;
+	declare licencia_tipo_m int8;
+
     declare codigo_tipo int8;
+    
+    select id_tipo into codigo_tipo from tipo_licencia where nombre_tipo=tipo;
     
     select fecha_nac  into codigo_fecha_nac  from ACTA_NAC where persona = cui;
 	select desc_fecha into fecha_nacido from fecha where id_fecha=codigo_fecha_nac;
@@ -177,14 +197,59 @@ BEGIN
 	insert ignore into FECHA (desc_fecha) values(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'));
     select id_fecha into codigo_fecha from fecha where desc_fecha=STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S');
     
-    select id_licencia into licencia from LICENCIA_CONDUCIR where cui=persona;
-    
-    
-    if licencia is null 
+    select id_licencia into licencia_tipo_a from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 1;
+	select id_licencia into licencia_tipo_b from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 2;
+    select id_licencia into licencia_tipo_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 3;
+	select id_licencia into licencia_tipo_m from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 4;
+    select id_licencia into licencia_tipo_e from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 5;
+
+	select id_licencia, fecha into licencia_c, codigo_fecha_antiguedad_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=3;
+	select id_licencia, fecha into licencia_b, codigo_fecha_antiguedad_b from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=2;
+
+	select desc_fecha into fecha_antiguedad_c from fecha where id_fecha=codigo_fecha_antiguedad_c;
+	select desc_fecha into fecha_antiguedad_b from fecha where id_fecha=codigo_fecha_antiguedad_b;
+
+
+	SELECT TIMESTAMPDIFF(YEAR, fecha_antiguedad_c, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into antiguedad_c;
+	SELECT TIMESTAMPDIFF(YEAR, fecha_antiguedad_b, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into antiguedad_b;
+
+    if licencia_tipo_c is null and tipo = 'C' 
     then 
-		if tipo = 'C' or tipo = 'M' or tipo = 'E' 
-        then
 			if edad >= 16 
+            then
+				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+			else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+			end if;
+	elseif licencia_tipo_m is null and 	tipo = 'M'    
+    then 
+			if edad >= 16 
+            then
+				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+			else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+			end if;
+		
+	elseif licencia_tipo_e is null and 	tipo = 'E'   
+    then 
+			if edad >= 16 
+            then
+				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+			else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+			end if;
+		
+	elseif licencia_tipo_b is null and 	tipo = 'B'
+    then
+			if edad >= 23  and antiguedad_c >=2
+			then
+				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+			else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+			end if;
+	elseif licencia_tipo_a is null and 	tipo = 'A'
+        then
+			if edad >= 25  and antiguedad_c >=3 or antiguedad_b>=3 
             then
 				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
 			else
@@ -192,17 +257,57 @@ BEGIN
 			end if;
 		else
 			select concat( 'no se pudo, revisa tipo de licencia que me dio amsieda :c ') as 'mensaje error';
-		end if;
-	else
-			select concat( 'aqui va la validacion para licencias tipo A y B :c ') as 'mensaje error';
-
-    end if;
+	end if;
     
 END$$
 
+call AddLicencia(3564360470101 , '18-04-2018', 'M');
 
+call AddLicencia(3564360470101 , '18-04-2018', 'C');
+call AddLicencia(3564360470101 , '18-04-2018', 'A');
+call AddLicencia(3564360470101 , '18-04-2023', 'B');
+
+call AddLicencia(3564360420101 , '18-04-2022', 'C');
+
+
+
+
+drop procedure if exists getNacimiento;
+
+DELIMITER $$
+CREATE PROCEDURE getNacimiento(IN cui int8)
+BEGIN
+	select id_acta_nac as no_acta , persona.cui as cui, concat(persona.apellido1, ' ', ifnull(persona.apellido2,'')) as apellidos, 
+    concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,'')) as nombres, padre as dpi_padre,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,'')) from persona where persona.cui= dpi_padre) as nombres_padre,
+    (select     concat(persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= dpi_padre) as apellidos_padre,
+    madre as dpi_madre,
+    (select concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,'')) from persona where persona.cui= dpi_madre) as nombres_madre,
+    (select     concat(persona.apellido1, ' ', ifnull(persona.apellido2,'')) from persona where persona.cui= dpi_madre) as apellidos_madre,
+    desc_fecha as fecha, nombre_departamento as departamento, nombre_municipio as municipio, nombre_genero as genero
+    from acta_nac inner join persona inner join fecha on fecha_nac=id_fecha inner join municipio on acta_nac.municipio=id_municipio 
+    inner join departamento on municipio.departamento = id_departamento  
+    inner join genero on acta_nac.genero = id_genero
+    where acta_nac.persona = persona.cui and persona.cui = cui ;
+END$$
+    
+call getNacimiento(3564360420101);
+
+
+
+
+
+
+
+
+
+
+
+
+select*from licencia_conducir;
 
 select * from dpi;
+select * from tipo_licencia;
 
 select * from fecha;
 select * from estado_civil;
