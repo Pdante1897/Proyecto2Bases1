@@ -294,11 +294,28 @@ END$$
 call getNacimiento(3564360420101);
 
 
+drop procedure if exists getDPI;
+
+DELIMITER $$
+CREATE PROCEDURE getDPI(IN cui_persona int8)
+BEGIN
+	select persona.cui as cui , concat(persona.apellido1, ' ', ifnull(persona.apellido2,'')) as apellidos, 
+    concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,'')) as nombres,
+    desc_fecha as fecha_mac, nombre_departamento as departamento, nombre_municipio as municipio,
+    (select nombre_departamento from departamento inner join municipio on municipio.departamento=id_departamento where municipio.id_municipio = dpi.municipio) as departamento_vecindad, 
+    (select nombre_municipio from municipio where municipio.id_municipio = dpi.municipio) as municipio_vecindad,
+    nombre_genero as genero
+    from dpi inner join persona on persona.cui = cui_persona
+    inner join municipio on dpi.municipio=id_municipio 
+    inner join departamento on municipio.departamento = id_departamento  
+    inner join acta_nac on acta_nac.persona = cui
+	inner join fecha on acta_nac.fecha_nac=id_fecha 
+    inner join genero on acta_nac.genero = id_genero
+    where dpi.id_dpi = persona.cui ;
+END$$
 
 
-
-
-
+call getDPI(3564360430101);
 
 
 
