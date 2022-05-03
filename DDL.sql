@@ -52,7 +52,7 @@ create table DPI(
 create table ACTA_NAC(
 	id_acta_nac int8 auto_increment primary key,
     fecha_nac int8 not null,
-    persona int8 not null,
+    persona int8 not null unique,
     municipio int8 not null,
     padre int8 not null,
     madre int8 not null,
@@ -89,6 +89,7 @@ create table LICENCIA_CONDUCIR(
 create table ANULADA(
 	id_anuladas int8 auto_increment primary key,
     licencia_conducir int8 not null,
+    fecha_anulada int8 not null,
     motivo varchar(50) not null
 );
 
@@ -176,7 +177,8 @@ ADD FOREIGN KEY (licencia_conducir) REFERENCES LICENCIA_CONDUCIR(id_licencia);
 alter table ANULADA
 ADD FOREIGN KEY (licencia_conducir) REFERENCES LICENCIA_CONDUCIR(id_licencia); 
 
-
+alter table ANULADA
+ADD FOREIGN KEY (fecha_anulada) REFERENCES FECHA(id_fecha); 
 
 
 

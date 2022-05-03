@@ -28,13 +28,10 @@ BEGIN
 END$$
 
 call AddNacimiento(3564360470101, 3564360420101, 'Violet', 'Natalia', null, '07-07-2029', 0101, 'F');
-
-
 call AddNacimiento(3564360440101, 3564360430101, 'Pedro', 'Saul', null, '07-07-2010', 0101, 'M');
-call AddNacimiento(3564360440101, 3564360430101, 'Sofia', 'Violeta', null, STR_TO_DATE('07/06/2010','%d/%m/%Y %H:%i:%S'), 0101, 'F');
-
-call AddNacimiento(1000000000101, 1000000100101, 'Raul', 'Riquelme', null, STR_TO_DATE('05/08/2020','%d/%m/%Y %H:%i:%S'), 1201, 'M');
-call AddNacimiento(1000000000101, 1000000100101, 'Sofia', 'Violeta', null, STR_TO_DATE('06/05/2021','%d/%m/%Y %H:%i:%S'), 1201, 'F');
+call AddNacimiento(3564360440101, 3564360430101, 'Sofia', 'Violeta', null, '07-06-2010', 0101, 'F');
+call AddNacimiento(1000000000101, 1000000100101, 'Raul', 'Riquelme', null, '05-08-2020', 1201, 'M');
+call AddNacimiento(1000000000101, 1000000100101, 'Sofia', 'Violeta', null, '06-05-2021', 1201, 'F');
 
 drop procedure if exists AddDefuncion;
 
@@ -110,13 +107,12 @@ call AddMatrimonio(3564360440101, 3564360430101, '20-04-1988');
 
 call AddMatrimonio(3564360430101, 3564360440101, '20-04-1988');
 
-
+select * from ACTA_NAC;
 
 call AddMatrimonio(3564360470101, 3564360420101, '20-04-1922');
 
 
 
-SELECT TIMESTAMPDIFF(YEAR, '1997-06-21', '20-04-2022');
 
 
 
@@ -482,6 +478,33 @@ select * from vigencia
 select id_fecha, desc_fecha  from fecha order by desc_fecha desc limit 1
 select * from licencia_conducir
 
+
+drop procedure if exists anularLicencia;
+
+DELIMITER $$
+CREATE PROCEDURE anularLicencia(IN no_licencia int8, IN fecha_anulacion varchar(10), IN motivo_anulacion varchar(50))
+BEGIN
+	declare codigo_fecha int8;
+	declare licencia int8;
+    
+    select id_licencia into licencia from licencia_conducir where no_licencia = id_licencia;
+    
+	insert ignore into FECHA (desc_fecha) values(STR_TO_DATE(fecha_anulacion,'%d-%m-%Y %H:%i:%S'));
+    select id_fecha into codigo_fecha from fecha where desc_fecha=STR_TO_DATE(fecha_anulacion,'%d-%m-%Y %H:%i:%S');
+
+	
+	if licencia is not null 
+    then 
+		insert into anulada values (null, no_licencia, codigo_fecha, motivo_anulacion); 
+    else
+		select concat( 'no se pudo, revisa si existe la licencia que me dio amsieda :c ') as 'mensaje error';
+    end if;
+
+END$$
+
+call anularLicencia(1,'10-12-2018', 'Exceso de velocidad');
+
+select * from anulada
 
 drop procedure if exists generarDPI;
 
