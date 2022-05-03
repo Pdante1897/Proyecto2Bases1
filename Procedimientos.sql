@@ -463,7 +463,7 @@ END$$
 
 update LICENCIA_CONDUCIR set tipo_licencia= 3 where id_licencia = 7 and tipo_licencia = 1;
 
-call renewLicencia(7, 3 , '25-4-2019', 'C');
+call renewLicencia(2, 3 , '25-4-2019', 'C');
 call renewLicencia(7, 3 , '25-4-2019', 'C');
 
 call renewLicencia(11, 4 , '10-4-2019', 'E');
@@ -599,6 +599,27 @@ END$$
 
 call getDPI(3564360470101);
 
+
+
+drop procedure if exists getLicencias;
+
+DELIMITER $$
+CREATE PROCEDURE getLicencias(IN cui_persona int8)
+BEGIN
+	select id_licencia as NoLicencia ,concat(persona.nombre1, ' ', ifnull(persona.nombre2,''), ' ', ifnull(persona.nombre3,'')) as Nombres,
+    concat(persona.apellido1, ' ', ifnull(persona.apellido2,'')) as Apellidos, 
+    nombre_tipo as tipoLicencia,
+    desc_fecha as fechaEmision, (select desc_fecha from vigencia 
+		inner join fecha on fecha_expiracion= id_fecha 
+		where NoLicencia= licencia_conducir order by desc_fecha desc limit 1) as fechaVencimiento
+    from licencia_conducir inner join persona on persona.cui = cui_persona
+	inner join fecha on licencia_conducir.fecha=id_fecha 
+    inner join tipo_licencia on licencia_conducir.tipo_licencia=tipo_licencia.id_tipo
+    where licencia_conducir.persona = persona.cui ;
+END$$
+
+call getLicencias(3564360440101);
+call getLicencias(3564360470101);
 
 drop procedure if exists getDivorcio;
 
