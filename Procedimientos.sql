@@ -181,6 +181,8 @@ BEGIN
     
     declare licencia_c int;
     declare licencia_b int;
+    declare licencia_m int;
+    declare licencia_e int;
     
 	declare licencia_tipo_a int8;
 	declare licencia_tipo_b int8;
@@ -211,7 +213,9 @@ BEGIN
 
 	select id_licencia, fecha into licencia_c, codigo_fecha_antiguedad_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=3;
 	select id_licencia, fecha into licencia_b, codigo_fecha_antiguedad_b from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=2;
-
+	select id_licencia into licencia_m from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=4;
+	select id_licencia into licencia_e from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=5;
+    
 	select desc_fecha into fecha_antiguedad_c from fecha where id_fecha=codigo_fecha_antiguedad_c;
 	select desc_fecha into fecha_antiguedad_b from fecha where id_fecha=codigo_fecha_antiguedad_b;
 
@@ -236,7 +240,7 @@ BEGIN
             then
 				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
                 select id_licencia into licencia_m from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=4;
-                insert into VIGENCIA values(null, licencia_c, codigo_fecha, codigo_fechafin);
+                insert into VIGENCIA values(null, licencia_m, codigo_fecha, codigo_fechafin);
 			else
 				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
 			end if;
@@ -247,24 +251,7 @@ BEGIN
             then
 				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
                 select id_licencia into licencia_e from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=5;
-                insert into VIGENCIA values(null, licencia_c, codigo_fecha, codigo_fechafin);
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
-			end if;
-		
-	elseif licencia_tipo_b is null and 	tipo = 'B'
-    then
-			if edad >= 23  and antiguedad_c >=2
-			then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
-			end if;
-	elseif licencia_tipo_a is null and 	tipo = 'A'
-        then
-			if edad >= 25  and antiguedad_c >=3 or antiguedad_b>=3 
-            then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+                insert into VIGENCIA values(null, licencia_e, codigo_fecha, codigo_fechafin);
 			else
 				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
 			end if;
@@ -274,7 +261,11 @@ BEGIN
     
 END$$
 
+call AddLicencia(3564360470101 , '18-04-2018', 'E');
 call AddLicencia(3564360470101 , '18-04-2018', 'M');
+call AddLicencia(3564360470101 , '18-04-2018', 'C');
+
+delete from licencia_conducir where id_licencia = 10;
 
 call AddLicencia(3564360440101 , '18-04-2018', 'C');
 call AddLicencia(3564360470101 , '18-04-2018', 'A');
@@ -287,10 +278,13 @@ call AddLicencia(3564360420101 , '18-04-2022', 'C');
 drop procedure if exists renewLicencia;
 
 DELIMITER $$
-CREATE PROCEDURE renewLicencia(IN cui int8, IN fecha_emision varchar(10), IN tipo char)
+CREATE PROCEDURE renewLicencia(IN cui int8, IN anios int , IN fecha_emision varchar(10), IN tipo char)
 BEGIN
 	declare codigo_fecha int8;
 	declare codigo_fechafin int8;
+
+	declare codigo_fecha_vencimiento int8;
+	declare fecha_vencimiento date;
 
     declare codigo_fecha_nac int8;
 	declare codigo_fecha_antiguedad_c int;
@@ -304,8 +298,10 @@ BEGIN
 	declare antiguedad_b int;
     declare edad int;
     
-    declare licencia_c int;
-    declare licencia_b int;
+    declare licencia_c int8;
+    declare licencia_b int8;
+    declare licencia_m int8;
+    declare licencia_e int8;
     
 	declare licencia_tipo_a int8;
 	declare licencia_tipo_b int8;
@@ -315,28 +311,29 @@ BEGIN
 
     declare codigo_tipo int8;
     
+    declare cui_persona int8;
     
     select id_tipo into codigo_tipo from tipo_licencia where nombre_tipo=tipo;
     
-    select fecha_nac  into codigo_fecha_nac  from ACTA_NAC where persona = cui;
+    select persona into cui_persona from licencia_conducir where id_licencia = cui limit 1;
+    
+    select fecha_nac  into codigo_fecha_nac  from ACTA_NAC where persona = cui_persona;
 	select desc_fecha into fecha_nacido from fecha where id_fecha=codigo_fecha_nac;
 	SELECT TIMESTAMPDIFF(YEAR, fecha_nacido, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into edad;
 
 	insert ignore into FECHA (desc_fecha) values(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'));
     select id_fecha into codigo_fecha from fecha where desc_fecha=STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S');
     
-    insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL 1 year));
-    select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL 1 year);
+    select licencia_conducir into licencia_tipo_a from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 1 limit 1;
+	select licencia_conducir into licencia_tipo_b from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 2 limit 1;
+    select licencia_conducir into licencia_tipo_c from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 3 limit 1;
+	select licencia_conducir into licencia_tipo_m from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 4 limit 1;
+    select licencia_conducir into licencia_tipo_e from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 5 limit 1;
     
-    select id_licencia into licencia_tipo_a from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 1;
-	select id_licencia into licencia_tipo_b from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 2;
-    select id_licencia into licencia_tipo_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 3;
-	select id_licencia into licencia_tipo_m from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 4;
-    select id_licencia into licencia_tipo_e from LICENCIA_CONDUCIR where cui=persona and tipo_licencia = 5;
-
-	select id_licencia, fecha into licencia_c, codigo_fecha_antiguedad_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=3;
-	select id_licencia, fecha into licencia_b, codigo_fecha_antiguedad_b from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=2;
-
+  
+	select fecha into codigo_fecha_antiguedad_c from LICENCIA_CONDUCIR where cui=id_licencia and tipo_licencia=3;
+	select fecha into codigo_fecha_antiguedad_b from LICENCIA_CONDUCIR where cui=id_licencia and tipo_licencia=2;
+  
 	select desc_fecha into fecha_antiguedad_c from fecha where id_fecha=codigo_fecha_antiguedad_c;
 	select desc_fecha into fecha_antiguedad_b from fecha where id_fecha=codigo_fecha_antiguedad_b;
 
@@ -344,52 +341,78 @@ BEGIN
 	SELECT TIMESTAMPDIFF(YEAR, fecha_antiguedad_c, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into antiguedad_c;
 	SELECT TIMESTAMPDIFF(YEAR, fecha_antiguedad_b, STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) into antiguedad_b;
 
-    if licencia_tipo_c is null and tipo = 'C' 
-    then 
-			if edad >= 16 
-            then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
-				select id_licencia into licencia_c from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=3;
-                insert into VIGENCIA values(null, licencia_c, codigo_fecha, codigo_fechafin);
+	
 
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
-			end if;
-	elseif licencia_tipo_m is null and 	tipo = 'M'    
+    if licencia_tipo_c is not null and tipo = 'C' and anios > 0 and anios <= 5
     then 
-			if edad >= 16 
-            then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
-                select id_licencia into licencia_m from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=4;
-                insert into VIGENCIA values(null, licencia_c, codigo_fecha, codigo_fechafin);
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
-			end if;
-		
-	elseif licencia_tipo_e is null and 	tipo = 'E'   
+					
+			
+				select fecha_expiracion into codigo_fecha_vencimiento  from vigencia inner join fecha on fecha_expiracion= id_fecha where licencia_tipo_c= licencia_conducir order by desc_fecha desc limit 1;
+				select desc_fecha into fecha_vencimiento  from fecha where id_fecha= codigo_fecha_vencimiento;
+                                
+                if date(fecha_vencimiento)> date(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) 
+                then
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(fecha_vencimiento, INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(fecha_vencimiento, INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_c, codigo_fecha_vencimiento, codigo_fechafin);
+				else
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_c, codigo_fecha, codigo_fechafin);
+                end if;
+			
+	elseif licencia_tipo_m is not null and 	tipo = 'M'    and anios > 0 and anios <= 5
     then 
-			if edad >= 16 
-            then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
-                select id_licencia into licencia_e from LICENCIA_CONDUCIR where cui=persona and tipo_licencia=5;
-                insert into VIGENCIA values(null, licencia_c, codigo_fecha, codigo_fechafin);
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
-			end if;
+			            
+            select fecha_expiracion into codigo_fecha_vencimiento  from vigencia inner join fecha on fecha_expiracion= id_fecha where licencia_tipo_m= licencia_conducir order by desc_fecha desc limit 1;
+				select desc_fecha into fecha_vencimiento  from fecha where id_fecha= codigo_fecha_vencimiento;
+                                
+                if date(fecha_vencimiento)> date(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) 
+                then
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(fecha_vencimiento, INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(fecha_vencimiento, INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_m, codigo_fecha_vencimiento, codigo_fechafin);
+				else
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_m, codigo_fecha, codigo_fechafin);
+                end if;
+			
+            
 		
-	elseif licencia_tipo_b is null and 	tipo = 'B'
+	elseif licencia_tipo_e is not null and 	tipo = 'E'   and anios > 0 and anios <= 5
+    then 
+			select fecha_expiracion into codigo_fecha_vencimiento  from vigencia inner join fecha on fecha_expiracion= id_fecha where licencia_tipo_e= licencia_conducir order by desc_fecha desc limit 1;
+				select desc_fecha into fecha_vencimiento  from fecha where id_fecha= codigo_fecha_vencimiento;
+                                
+                if date(fecha_vencimiento)> date(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) 
+                then
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(fecha_vencimiento, INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(fecha_vencimiento, INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_e, codigo_fecha_vencimiento, codigo_fechafin);
+				else
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_e, codigo_fecha, codigo_fechafin);
+                end if;
+			
+		
+	elseif 	 licencia_tipo_c is not null and tipo = 'B'  and anios > 0 and anios <= 5
     then
 			if edad >= 23  and antiguedad_c >=2
 			then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
-			else
-				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
+            	update LICENCIA_CONDUCIR set tipo_licencia= 2 where id_licencia = cui and tipo_licencia = 3;
+			
+            else
+				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ', edad) as 'mensaje error';
 			end if;
-	elseif licencia_tipo_a is null and 	tipo = 'A'
+            
+	elseif 	tipo = 'A' and (licencia_tipo_c is not null or licencia_tipo_b is not null) and anios > 0 and anios <= 5
         then
 			if edad >= 25  and antiguedad_c >=3 or antiguedad_b>=3 
             then
-				insert into LICENCIA_CONDUCIR values(null, cui, codigo_tipo, codigo_fecha);
+				update LICENCIA_CONDUCIR set tipo_licencia= 1 where id_licencia = cui and tipo_licencia = 2 or tipo_licencia = 3;
+
 			else
 				select concat( 'no se pudo, edad insuficiente para licencia, y me dio amsieda :c ') as 'mensaje error';
 			end if;
@@ -397,10 +420,67 @@ BEGIN
 			select concat( 'no se pudo, revisa tipo de licencia que me dio amsieda :c ') as 'mensaje error';
 	end if;
     
+    select licencia_conducir into licencia_tipo_a from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 1 limit 1;
+	select licencia_conducir into licencia_tipo_b from vigencia inner join licencia_conducir on licencia_conducir=id_licencia where cui=licencia_conducir and tipo_licencia = 2 limit 1;
+    
+    if licencia_tipo_b is not null and tipo = 'B' and anios > 0 and anios <= 5
+    then 
+					
+			
+				select fecha_expiracion into codigo_fecha_vencimiento  from vigencia inner join fecha on fecha_expiracion= id_fecha where licencia_tipo_b= licencia_conducir order by desc_fecha desc limit 1;
+				select desc_fecha into fecha_vencimiento  from fecha where id_fecha= codigo_fecha_vencimiento;
+                                
+                if date(fecha_vencimiento)> date(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) 
+                then
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(fecha_vencimiento, INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(fecha_vencimiento, INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_b, codigo_fecha_vencimiento, codigo_fechafin);
+				else
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_b, codigo_fecha, codigo_fechafin);
+                end if;
+			
+	elseif licencia_tipo_a is not null and 	tipo = 'A'    and anios > 0 and anios <= 5
+    then 
+			            
+            select fecha_expiracion into codigo_fecha_vencimiento  from vigencia inner join fecha on fecha_expiracion= id_fecha where licencia_tipo_a= licencia_conducir order by desc_fecha desc limit 1;
+				select desc_fecha into fecha_vencimiento  from fecha where id_fecha= codigo_fecha_vencimiento;
+                                
+                if date(fecha_vencimiento)> date(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S')) 
+                then
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(fecha_vencimiento, INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(fecha_vencimiento, INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_a, codigo_fecha_vencimiento, codigo_fechafin);
+				else
+					insert ignore into FECHA (desc_fecha) values(DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year));
+					select id_fecha into codigo_fechafin from fecha where desc_fecha=DATE_ADD(STR_TO_DATE(fecha_emision,'%d-%m-%Y %H:%i:%S'), INTERVAL anios year);
+					insert into VIGENCIA values(null, licencia_tipo_a, codigo_fecha, codigo_fechafin);
+                end if;
+	
+            
+	end if;
+    
 END$$
 
 
 
+update LICENCIA_CONDUCIR set tipo_licencia= 3 where id_licencia = 7 and tipo_licencia = 1;
+
+call renewLicencia(7, 3 , '25-4-2019', 'C');
+call renewLicencia(7, 3 , '25-4-2019', 'C');
+
+call renewLicencia(11, 4 , '10-4-2019', 'E');
+call renewLicencia(12, 4 , '10-4-2019', 'M');
+
+call renewLicencia(9, 3 , '15-4-2028', 'A');
+call renewLicencia(9, 3 , '15-4-2025', 'B');
+call renewLicencia(9, 3 , '15-4-2022', 'C');
+
+
+select * from vigencia
+select id_fecha, desc_fecha  from fecha order by desc_fecha desc limit 1
+select * from licencia_conducir
 
 
 drop procedure if exists generarDPI;
@@ -471,7 +551,7 @@ BEGIN
     where acta_nac.persona = persona.cui and persona.cui = cui ;
 END$$
     
-call getNacimiento(3564360420101);
+call getNacimiento(3564360470101);
 
 
 drop procedure if exists getDPI;
@@ -558,8 +638,8 @@ call getMatrimonio(1);
 
 
 
-
 select*from licencia_conducir;
+select*from vigencia;
 
 select * from dpi;
 select * from tipo_licencia;
@@ -575,4 +655,6 @@ select * from acta_divorcio;
 
 
 select * from municipio;
-select * from genero;
+select * from genero;call renewLicencia(9, 3 , '15-4-2025', 'B')
+call renewLicencia(9, 3 , '15-4-2025', 'B')
+call renewLicencia(9, 3 , '15-4-2025', 'B')
