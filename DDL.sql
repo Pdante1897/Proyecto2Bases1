@@ -101,6 +101,8 @@ create table VIGENCIA(
 );
 
 
+CREATE TABLE if not exists sequence (id INT NOT NULL);
+
 alter table ACTA_NAC 
 ADD FOREIGN KEY (genero) REFERENCES GENERO(id_genero); 
 

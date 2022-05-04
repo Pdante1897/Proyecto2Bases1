@@ -1,4 +1,6 @@
  
+ #Procedimiento1--------------------------------------------------
+ 
 drop procedure if exists addnacimiento;
 DELIMITER $$
 CREATE PROCEDURE AddNacimiento(IN dpi_padre int8, IN dpi_madre int8, IN primer_nom varchar(30), IN segundo_nom varchar(30), IN tercer_nom varchar(30), IN fecha_nac varchar(10), IN codigo_municipio int8, IN genero char)
@@ -27,12 +29,8 @@ BEGIN
     end if;
 END$$
 
-call AddNacimiento(3564360470101, 3564360420101, 'Violet', 'Natalia', null, '07-07-2029', 0101, 'F');
-call AddNacimiento(3564360440101, 3564360430101, 'Pedro', 'Saul', null, '07-07-2010', 0101, 'M');
-call AddNacimiento(3564360440101, 3564360430101, 'Sofia', 'Violeta', null, '07-06-2010', 0101, 'F');
-call AddNacimiento(1000000000101, 1000000100101, 'Raul', 'Riquelme', null, '05-08-2020', 1201, 'M');
-call AddNacimiento(1000000000101, 1000000100101, 'Sofia', 'Violeta', null, '06-05-2021', 1201, 'F');
-
+ #Procedimiento2--------------------------------------------------
+ 
 drop procedure if exists AddDefuncion;
 
 DELIMITER $$
@@ -52,11 +50,7 @@ BEGIN
 	
 END$$
 
-call AddDefuncion(4000000021201, '20-04-2022', 'jugar free faller');
-call AddDefuncion(4000000021201, '20-04-2022', 'otra cosa xd ');
-call AddDefuncion(4000000031201, '05-05-2021', 'no se');
-call AddDefuncion(4000000050101, '01-05-2022', 'no se');
-
+ #Procedimiento3--------------------------------------------------
 
 drop procedure if exists AddMatrimonio;
 DELIMITER $$
@@ -102,18 +96,8 @@ BEGIN
     end if;
 END$$
 
-call AddMatrimonio(3564360440101, 3564360430101, '20-04-1988');
 
-
-call AddMatrimonio(3564360430101, 3564360440101, '20-04-1988');
-
-select * from ACTA_NAC;
-
-call AddMatrimonio(3564360470101, 3564360420101, '20-04-1922');
-
-
-
-
+ #Procedimiento4--------------------------------------------------
 
 
 drop procedure if exists AddDivorcio;
@@ -153,7 +137,8 @@ BEGIN
     end if;
 END$$
 
-call AddDivorcio(2, '19-04-1992');
+ #Procedimiento5--------------------------------------------------
+
 
 drop procedure if exists AddLicencia;
 
@@ -257,18 +242,8 @@ BEGIN
     
 END$$
 
-call AddLicencia(3564360470101 , '18-04-2018', 'E');
-call AddLicencia(3564360470101 , '18-04-2018', 'M');
-call AddLicencia(3564360470101 , '18-04-2018', 'C');
 
-delete from licencia_conducir where id_licencia = 10;
-
-call AddLicencia(3564360440101 , '18-04-2018', 'C');
-call AddLicencia(3564360470101 , '18-04-2018', 'A');
-call AddLicencia(3564360470101 , '18-04-2023', 'B');
-
-call AddLicencia(3564360420101 , '18-04-2022', 'C');
-
+ #Procedimiento6--------------------------------------------------
 
 
 drop procedure if exists renewLicencia;
@@ -460,24 +435,7 @@ BEGIN
 END$$
 
 
-
-update LICENCIA_CONDUCIR set tipo_licencia= 3 where id_licencia = 7 and tipo_licencia = 1;
-
-call renewLicencia(2, 3 , '25-4-2019', 'C');
-call renewLicencia(7, 3 , '25-4-2019', 'C');
-
-call renewLicencia(11, 4 , '10-4-2019', 'E');
-call renewLicencia(12, 4 , '10-4-2019', 'M');
-
-call renewLicencia(9, 3 , '15-4-2028', 'A');
-call renewLicencia(9, 3 , '15-4-2025', 'B');
-call renewLicencia(9, 3 , '15-4-2022', 'C');
-
-
-select * from vigencia
-select id_fecha, desc_fecha  from fecha order by desc_fecha desc limit 1
-select * from licencia_conducir
-
+ #Procedimiento7--------------------------------------------------
 
 drop procedure if exists anularLicencia;
 
@@ -502,9 +460,8 @@ BEGIN
 
 END$$
 
-call anularLicencia(1,'10-12-2018', 'Exceso de velocidad');
+ #Procedimiento8--------------------------------------------------
 
-select * from anulada
 
 drop procedure if exists generarDPI;
 
@@ -536,7 +493,6 @@ BEGIN
 
 END$$
 
-call generarDPI(3564360470101 , '18-04-2015', 0101);
 
 
 
@@ -553,6 +509,7 @@ call generarDPI(3564360470101 , '18-04-2015', 0101);
 
 
 
+ #Procedimiento9--------------------------------------------------
 
 
 drop procedure if exists getNacimiento;
@@ -574,8 +531,8 @@ BEGIN
     where acta_nac.persona = persona.cui and persona.cui = cui ;
 END$$
     
-call getNacimiento(3564360470101);
 
+ #Procedimiento10--------------------------------------------------
 
 drop procedure if exists getDPI;
 
@@ -597,8 +554,8 @@ BEGIN
     where dpi.id_dpi = persona.cui ;
 END$$
 
-call getDPI(3564360470101);
 
+ #Procedimiento11--------------------------------------------------
 
 
 drop procedure if exists getLicencias;
@@ -618,8 +575,8 @@ BEGIN
     where licencia_conducir.persona = persona.cui ;
 END$$
 
-call getLicencias(3564360440101);
-call getLicencias(3564360470101);
+ #Procedimiento12--------------------------------------------------
+
 
 drop procedure if exists getDivorcio;
 
@@ -637,7 +594,7 @@ BEGIN
 END$$
 
 
-call getDivorcio(2);
+ #Procedimiento13--------------------------------------------------
 
 
 drop procedure if exists getDefuncion;
@@ -658,7 +615,7 @@ BEGIN
     where acta_defuncion.persona = persona.cui and persona.cui = cui ;
 END$$
 
-call getDefuncion(4000000021201);
+ #Procedimiento14--------------------------------------------------
 
 
 drop procedure if exists getMatrimonio;
@@ -677,28 +634,5 @@ BEGIN
 END$$
 
 
-call getMatrimonio(1);
 
 
-
-
-select*from licencia_conducir;
-select*from vigencia;
-
-select * from dpi;
-select * from tipo_licencia;
-
-select * from fecha;
-select * from estado_civil;
-select * from persona;
-select * from acta_nac;
-select * from acta_defuncion;
-select * from acta_matri;
-select * from acta_divorcio;
-
-
-
-select * from municipio;
-select * from genero;call renewLicencia(9, 3 , '15-4-2025', 'B')
-call renewLicencia(9, 3 , '15-4-2025', 'B')
-call renewLicencia(9, 3 , '15-4-2025', 'B')
